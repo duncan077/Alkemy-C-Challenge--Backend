@@ -1,16 +1,20 @@
+using DisneyApi.Data;
 using DisneyApi.Extend;
 using DisneyApi.Model;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = "server=localhost;user=meme;password=meme;database=memesplace";
+var connectionString = "server=localhost;user=disney;password=1234;database=disneyapi";
 var serverVersion = ServerVersion.AutoDetect(connectionString);
 // Add services to the container.
-builder.Services.AddDbContext<AppDBContext>(options => options
+builder.Services.AddDbContext<DisneyContext>(options => options
                 .UseMySql(connectionString, serverVersion)
                 // The following three options help with debugging, but should
                 // be changed or removed for production.
@@ -19,7 +23,25 @@ builder.Services.AddDbContext<AppDBContext>(options => options
                 .EnableDetailedErrors());
 builder.Services.AddIdentityCore<DisneyUser>()
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<AppDBContext>();
+    .AddEntityFrameworkStores<DisneyContext>();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"]))
+    };
+});
 
 builder.Services.ConfigureCors();
 builder.Services.AddControllers();
@@ -39,8 +61,8 @@ app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
