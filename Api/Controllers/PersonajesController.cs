@@ -9,6 +9,7 @@ using DisneyApi.Data;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using DisneyApi.Model.Personaje;
+using DisneyApi.Model.Pelicula;
 
 namespace DisneyApi.Controllers
 {
@@ -63,6 +64,7 @@ namespace DisneyApi.Controllers
         {
             var pj = _mapper.Map<PersonajeModelDTO, Personaje>(personaje);
             pj.Id = id;
+            AddPelicula(personaje,pj);
             _context.Entry(pj).State = EntityState.Modified;
 
             try
@@ -94,6 +96,7 @@ namespace DisneyApi.Controllers
             try
             {
                 var pj = _mapper.Map<PersonajeModelDTO, Personaje>(personaje);
+                AddPelicula(personaje, pj);
                             _context.personajes.Add(pj);
                             await _context.SaveChangesAsync();
 
@@ -127,6 +130,16 @@ namespace DisneyApi.Controllers
         private bool PersonajeExists(int id)
         {
             return _context.personajes.Any(e => e.Id == id);
+        }
+        private void AddPelicula(PersonajeModelDTO personaje, Personaje result)
+        {
+            foreach (var item in personaje.peliculas)
+            {
+                if (_context.peliculas.Any(g => g.Id == item))
+                    result.peliculas.Add(_context.peliculas.Find(item));
+                _logger.LogWarning($"Pelicula {item} no existe");
+            }
+         
         }
     }
     public class PjParameters

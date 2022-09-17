@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DisneyApi.Data;
 using Microsoft.AspNetCore.Authorization;
+using DisneyApi.Model.Genero;
+using AutoMapper;
 
 namespace DisneyApi.Controllers
 {
@@ -15,22 +17,26 @@ namespace DisneyApi.Controllers
     public class GenerosController : ControllerBase
     {
         private readonly DisneyContext _context;
+        private readonly IMapper mapper;
+        private readonly ILogger logger;
 
-        public GenerosController(DisneyContext context)
+        public GenerosController(DisneyContext context, IMapper mapper, ILogger logger)
         {
             _context = context;
+            this.mapper = mapper;
+            this.logger = logger;
         }
 
         // GET: api/Generos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Genero>>> Getgeneros()
+        public async Task<ActionResult<IEnumerable<GeneroDTO>>> Getgeneros()
         {
-            return await _context.generos.ToListAsync();
+            return mapper.Map<List<Genero>,List<GeneroDTO>>(await _context.generos.ToListAsync());
         }
 
         // GET: api/Generos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Genero>> GetGenero(int id)
+        public async Task<ActionResult<GeneroDTO>> GetGenero(int id)
         {
             var genero = await _context.generos.FindAsync(id);
 
@@ -39,20 +45,22 @@ namespace DisneyApi.Controllers
                 return NotFound();
             }
 
-            return genero;
+            return mapper.Map<Genero,GeneroDTO>(genero);
         }
 
         // PUT: api/Generos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutGenero(int id, Genero genero)
+        public async Task<IActionResult> PutGenero(int id, GeneroDTO genero)
         {
-            if (id != genero.Id)
+            var genro = await _context.generos.FindAsync(id);
+            if(genro == null)
             {
                 return BadRequest();
             }
-
+            genro.Imagen = genero.Imagen;
+            genro.Nombre = genero.Nombre;
             _context.Entry(genero).State = EntityState.Modified;
 
             try
@@ -78,9 +86,9 @@ namespace DisneyApi.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Genero>> PostGenero(Genero genero)
+        public async Task<ActionResult<GeneroDTO>> PostGenero(GeneroDTO genero)
         {
-            _context.generos.Add(genero);
+            _context.generos.Add(mapper.Map<GeneroDTO,Genero>(genero));
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetGenero", new { id = genero.Id }, genero);

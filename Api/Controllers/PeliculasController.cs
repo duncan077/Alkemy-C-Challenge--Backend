@@ -59,14 +59,12 @@ namespace DisneyApi.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutPelicula(int id, Pelicula pelicula)
+        public async Task<IActionResult> PutPelicula(int id, PeliculaModelDTO pelicula)
         {
-            if (id != pelicula.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(pelicula).State = EntityState.Modified;
+            var result = _mapper.Map<PeliculaModelDTO, Pelicula>(pelicula);
+            result.Id = id;
+             AddPjAndGenro(pelicula, result);
+            _context.Entry(result).State = EntityState.Modified;
 
             try
             {
@@ -80,7 +78,7 @@ namespace DisneyApi.Controllers
                 }
                 else
                 {
-                    _logger.LogError($"Error on put peliculas, {ex.Message}");
+                    _logger.LogError($"Error on put movies, {ex.Message}");
                     return StatusCode(500, "Unexpected Error, please try again");
                 }
             }
@@ -88,15 +86,19 @@ namespace DisneyApi.Controllers
             return NoContent();
         }
 
+       
+
         // POST: api/movies
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<Pelicula>> PostPelicula(PeliculaModelDTO peliculaDto)
         {
-            var pelicula = _mapper.Map<PeliculaModelDTO, Pelicula>(peliculaDto);
+            
             try
             {
+                var pelicula = _mapper.Map<PeliculaModelDTO, Pelicula>(peliculaDto);
+                AddPjAndGenro(peliculaDto, pelicula);
                 _context.peliculas.Add(pelicula);
             await _context.SaveChangesAsync();
 
@@ -132,7 +134,23 @@ namespace DisneyApi.Controllers
         {
             return _context.peliculas.Any(e => e.Id == id);
         }
+        private void AddPjAndGenro(PeliculaModelDTO pelicula, Pelicula result)
+        {
+            foreach (var item in pelicula.personajes)
+            {
+                if (_context.personajes.Any(g => g.Id == item))
+                    result.personajes.Add( _context.personajes.Find(item));
+                _logger.LogWarning($"Personaje {item} no existe");
+            }
+            foreach (var item in pelicula.generos)
+            {
+                if (_context.generos.Any(g => g.Id == item))
+                    result.generos.Add(_context.generos.Find(item));
+                _logger.LogWarning($"Genero {item} no existe");
+            }
+        }
     }
+
     public class PeliculasParameter
         {
         public PeliculasParameter(string? order)
