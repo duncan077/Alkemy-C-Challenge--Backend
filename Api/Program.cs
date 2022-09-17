@@ -5,8 +5,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System;
+
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
+using SendGrid;
+using SendGrid.Extensions.DependencyInjection;
+using SendGrid.Helpers.Mail;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +47,10 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"]))
     };
 });
-
+builder.Services.AddSendGrid(options =>
+    options.ApiKey = builder.Configuration.GetValue<string>("SendGridApiKey")
+                     ?? throw new Exception("The 'SendGridApiKey' is not configured")
+);
 builder.Services.ConfigureCors();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

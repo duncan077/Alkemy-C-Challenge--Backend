@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using SendGrid.Helpers.Mail;
+using SendGrid;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -18,12 +20,14 @@ namespace DisneyApi.Controllers
         private readonly ILogger<AuthController> _logger;
         private readonly UserManager<DisneyUser> _userManager;
         private readonly IConfiguration configuration;
+        private readonly ISendGridClient sendGridClient;
 
-        public AuthController(ILogger<AuthController> logger,  UserManager<DisneyUser> userManager, IConfiguration configuration)
+        public AuthController(ILogger<AuthController> logger, UserManager<DisneyUser> userManager, IConfiguration configuration, ISendGridClient sendGridClient)
         {
             _logger = logger;
             _userManager = userManager;
             this.configuration = configuration;
+            this.sendGridClient = sendGridClient;
         }
 
         [HttpPost]
@@ -71,7 +75,7 @@ namespace DisneyApi.Controllers
                     }
                     return BadRequest(ModelState);
                 }
-                
+                await SendEmailAsync(user.Email);
                 return Ok(result);
             }
             catch (Exception e)
@@ -110,6 +114,31 @@ namespace DisneyApi.Controllers
             {
 
                 throw;
+            }
+        }
+        private async Task SendEmailAsync(string toEmail)
+        {
+
+
+
+            var msg = new SendGridMessage()
+            {
+                From = new EmailAddress("duncancacerescartasso@gmail.com", "disneyfinder.com"),
+                Subject = "Welcome to DisneyFinder!",
+                TemplateId = "d-7a0b4fd873d744fb984e6c87ef5bb763"
+            };
+            msg.AddTo(new EmailAddress(toEmail));
+
+            var response = await sendGridClient.SendEmailAsync(msg);
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation("Email queued successfully");
+            }
+            else
+            {
+                _logger.LogError("Failed to send email");
+                // Adding more information related to the failed email could be helpful in debugging failure,
+                // but be careful about logging PII, as it increases the chance of leaking PII
             }
         }
     }
