@@ -11,6 +11,7 @@ namespace DisneyApi.Model.DTO.User
         [Required]
         [MinLength(8)]
         [PasswordPropertyText]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
         [Required]
         [EmailAddress]
