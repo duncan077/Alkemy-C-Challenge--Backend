@@ -29,7 +29,8 @@
     public string id{ get; set; }
     private async Task OnClickDelete()
     {
-
+        var result = await pjService.DeletePersonaje(int.Parse(id));
+        nav.NavigateTo("/");
     }
     private async Task OnClickEdit()
     {

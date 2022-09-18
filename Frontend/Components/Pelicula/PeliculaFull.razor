@@ -1,5 +1,7 @@
 ﻿@using Frontend.Components.Genero
 @using Frontend.Components.Personaje
+@inject NavigationManager nav
+@inject IPeliculasService pcService
 <MudCard>
     <MudCardContent>
         <MudText>@pelicula.Titulo</MudText>
@@ -28,12 +30,15 @@
     [Parameter]
     public PeliculaFullDTO pelicula { get; set; }
 
+    [Parameter]
+    public string id { get; set; }
     private async Task OnClickDelete()
     {
-
+        var result = await pcService.DeletePelicula(int.Parse(id));
+        nav.NavigateTo("/");
     }
     private async Task OnClickEdit()
     {
-
+        nav.NavigateTo($"/peliculas/edit/{id}");
     }
 }

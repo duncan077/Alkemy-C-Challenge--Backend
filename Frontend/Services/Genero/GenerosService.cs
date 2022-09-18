@@ -3,7 +3,7 @@ using Frontend.Services.Base;
 
 namespace Frontend.Services
 {
-    public class GenerosService : BaseHttpService, IGenerosService
+    public class GenerosService : BaseHttpService,  IGenerosService
     {
         private readonly IClient client;
 
@@ -100,7 +100,7 @@ namespace Frontend.Services
                 await client.GenerosDELETEAsync(id);
                 response = new Response<GeneroDTO>
                 {
-                   
+
                     IsSuccess = true
                 };
             }

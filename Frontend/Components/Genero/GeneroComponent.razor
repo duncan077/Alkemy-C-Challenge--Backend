@@ -1,4 +1,6 @@
-﻿<MudCard>
+﻿@inject NavigationManager nav
+@inject IGenerosService gService
+<MudCard>
     <MudCardContent>
         <MudText>@genero.Nombre</MudText>
         <MudImage Src=@genero.Imagen></MudImage>
@@ -16,10 +18,14 @@
     [Parameter]
     public GeneroDTO genero { get; set; }
 
-    private async Task OnClickDelete(){
-
+    [Parameter]
+    public string id { get; set; }
+    private async Task OnClickDelete()
+    {
+        var result = await gService.DeleteGenero(int.Parse(id));
+        nav.NavigateTo("/");
     }
     private async Task OnClickEdit(){
-
+        nav.NavigateTo($"/generos/edit/{id}");
     }
 }

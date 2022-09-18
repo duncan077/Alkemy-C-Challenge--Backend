@@ -85,12 +85,12 @@ namespace Frontend.Services.Base
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PeliculaSimpleDTO>> MoviesAllAsync(string name, int? genre, string order);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PeliculaSimpleDTO>> MoviesAllAsync(string name, string order, int? genre);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PeliculaSimpleDTO>> MoviesAllAsync(string name, int? genre, string order, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PeliculaSimpleDTO>> MoviesAllAsync(string name, string order, int? genre, System.Threading.CancellationToken cancellationToken);
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -734,15 +734,15 @@ namespace Frontend.Services.Base
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PeliculaSimpleDTO>> MoviesAllAsync(string name, int? genre, string order)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PeliculaSimpleDTO>> MoviesAllAsync(string name, string order, int? genre)
         {
-            return MoviesAllAsync(name, genre, order, System.Threading.CancellationToken.None);
+            return MoviesAllAsync(name, order, genre, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PeliculaSimpleDTO>> MoviesAllAsync(string name, int? genre, string order, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PeliculaSimpleDTO>> MoviesAllAsync(string name, string order, int? genre, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/movies?");
@@ -750,13 +750,13 @@ namespace Frontend.Services.Base
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("name") + "=").Append(System.Uri.EscapeDataString(ConvertToString(name, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
-            if (genre != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("genre") + "=").Append(System.Uri.EscapeDataString(ConvertToString(genre, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
             if (order != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("order") + "=").Append(System.Uri.EscapeDataString(ConvertToString(order, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (genre != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("genre") + "=").Append(System.Uri.EscapeDataString(ConvertToString(genre, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
 
@@ -1701,11 +1701,12 @@ namespace Frontend.Services.Base
         public string Imagen { get; set; }
 
         [Newtonsoft.Json.JsonProperty("calificacion", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Range(1, 5)]
         public int Calificacion { get; set; }
 
         [Newtonsoft.Json.JsonProperty("fechaCreacion", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public System.DateTime? FechaCreacion { get; set; }
+        public System.DateTime FechaCreacion { get; set; }
 
         [Newtonsoft.Json.JsonProperty("personajes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<int> Personajes { get; set; }
