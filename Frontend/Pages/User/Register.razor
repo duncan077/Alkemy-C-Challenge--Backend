@@ -1,0 +1,61 @@
+﻿@page "/users/register"
+@inject IClient httpclient
+@inject NavigationManager nav
+<h3>Register</h3>
+
+@if(!string.IsNullOrEmpty(message)){
+
+<div class="alert-danger">@message</div>
+}
+<EditForm Model="@regModel" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="First name" HelperText="Max. 8 characters"
+                                  @bind-Value="regModel.UserName" For="@(() => regModel.UserName)" />
+                    <MudTextField Label="Email" Class="mt-3"
+                                  @bind-Value="regModel.Email" For="@(() => regModel.Email)" />
+                    <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                  @bind-Value="regModel.Password" For="@(() => regModel.Password)" InputType="InputType.Password" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        
+        <MudItem xs="12">
+            <MudText Typo="Typo.body2" Align="Align.Center">
+                Fill out the form correctly to see the success message.
+            </MudText>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+
+    RegisterDTO regModel = new RegisterDTO();
+    string message = string.Empty;
+    private async Task OnValidSubmit()
+    {
+        try
+        {
+            var result = await httpclient.RegisterAsync(regModel);
+            if (result.IsAuthSuccessful) { 
+            
+            nav.NavigateTo("/users/login");
+
+        }
+        message = "Error on register. Please try again...";
+
+        }
+        catch (ApiException ex)
+        {
+            message = ex.Message;
+
+        }
+    }
+
+}

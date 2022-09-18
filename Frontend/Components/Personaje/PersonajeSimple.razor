@@ -1,0 +1,18 @@
+﻿@using Frontend.Components.Genero
+<MudCard>
+    <MudCardContent>
+        <MudText>@personaje.Nombre</MudText>
+        <MudImage Src=@personaje.Imagen></MudImage>
+    
+        
+    </MudCardContent>
+   
+
+</MudCard>
+
+@code {
+    [Parameter]
+    public PersonajeSimpleDTO personaje { get; set; }
+
+   
+}

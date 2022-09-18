@@ -1,0 +1,18 @@
+﻿@using Frontend.Components.Genero
+<MudCard>
+    <MudCardContent>
+        <MudText>@pelicula.Titulo</MudText>
+        <MudImage Src=@pelicula.Imagen></MudImage>
+        <MudText>Creado @pelicula.FechaCreacion</MudText>
+        
+    </MudCardContent>
+   
+
+</MudCard>
+
+@code {
+    [Parameter]
+    public PeliculaSimpleDTO pelicula { get; set; }
+
+   
+}

@@ -1,0 +1,39 @@
+﻿@using Frontend.Components.Genero
+@using Frontend.Components.Personaje
+<MudCard>
+    <MudCardContent>
+        <MudText>@pelicula.Titulo</MudText>
+        <MudImage Src=@pelicula.Imagen></MudImage>
+        <MudText>Raiting @pelicula.Calificacion</MudText>
+        <MudText>Publicado: @pelicula.FechaCreacion</MudText>
+        @foreach (var item in pelicula.Generos)
+        {
+            <GeneroComponent genero="item"></GeneroComponent>
+        }
+        @foreach (var item in pelicula.Personajes)
+        {
+            <PersonajeSimple personaje="item"></PersonajeSimple>
+        }
+    </MudCardContent>
+    <AuthorizeView>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnClickEdit">Edit</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnClickDelete">Delete</MudButton>
+        </MudCardActions>
+    </AuthorizeView>
+
+</MudCard>
+
+@code {
+    [Parameter]
+    public PeliculaFullDTO pelicula { get; set; }
+
+    private async Task OnClickDelete()
+    {
+
+    }
+    private async Task OnClickEdit()
+    {
+
+    }
+}

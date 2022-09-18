@@ -1,0 +1,35 @@
+﻿@using Frontend.Components.Pelicula
+<MudCard>
+    <MudCardContent>
+        <MudText>@personaje.Nombre</MudText>
+        <MudImage Src=@personaje.Imagen></MudImage>
+        <MudText>Edad: @personaje.Edad</MudText>
+        <MudText>Peso: @personaje.Peso</MudText>
+        <MudText>Historia: @personaje.Historia</MudText>
+        @foreach (var item in personaje.Peliculas)
+        {
+            <PeliculaSimple pelicula="item"></PeliculaSimple>
+        }
+    </MudCardContent>
+    <AuthorizeView>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnClickEdit">Edit</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnClickDelete">Delete</MudButton>
+        </MudCardActions>
+    </AuthorizeView>
+
+</MudCard>
+
+@code {
+    [Parameter]
+    public PersonajeFullDTO personaje { get; set; }
+
+    private async Task OnClickDelete()
+    {
+
+    }
+    private async Task OnClickEdit()
+    {
+
+    }
+}

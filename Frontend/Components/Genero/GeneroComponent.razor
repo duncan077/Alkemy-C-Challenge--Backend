@@ -1,0 +1,25 @@
+﻿<MudCard>
+    <MudCardContent>
+        <MudText>@genero.Nombre</MudText>
+        <MudImage Src=@genero.Imagen></MudImage>
+    </MudCardContent>
+    <AuthorizeView>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnClickEdit">Edit</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnClickDelete">Delete</MudButton>
+        </MudCardActions>
+    </AuthorizeView>
+ 
+</MudCard>
+
+@code {
+    [Parameter]
+    public GeneroDTO genero { get; set; }
+
+    private async Task OnClickDelete(){
+
+    }
+    private async Task OnClickEdit(){
+
+    }
+}

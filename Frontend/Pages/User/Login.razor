@@ -1,0 +1,67 @@
+﻿@page "/users/login"
+@inject NavigationManager nav
+@inject IAuthService auth
+@using Microsoft.AspNetCore.WebUtilities
+<h3>Login</h3>
+
+
+@if (!string.IsNullOrEmpty(message))
+{
+
+    <div class="alert-danger">@message</div>
+}
+<EditForm Model="@loginModel" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="First name" HelperText="Max. 8 characters"
+                                  @bind-Value="loginModel.UserName" For="@(() => loginModel.UserName)" />
+                 
+                    <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                  @bind-Value="loginModel.Password" For="@(() => loginModel.Password)" InputType="InputType.Password" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        
+        <MudItem xs="12">
+            <MudText Typo="Typo.body2" Align="Align.Center">
+                Fill out the form correctly to see the success message.
+            </MudText>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+ 
+    LoginDTO loginModel = new LoginDTO();
+    string message = string.Empty;
+    private async Task OnValidSubmit()
+    {
+            
+        try
+        {
+            var response= await auth.AuthAsync(loginModel);
+            if(response)
+            {
+                nav.NavigateTo("/");
+            }
+            message = "Invalid Login. Please try again";
+        }
+        catch (ApiException ex)
+        {
+            message = ex.Message;
+
+            }
+            
+        }
+    }
+   
+  
+
+
+}
