@@ -22,7 +22,7 @@ namespace DisneyApi.Data
         [MaxLength(255)]
         public string? Historia { get; set; }
         [Required]
-        [DataType(DataType.ImageUrl)]
+        
         public string Imagen { get; set; }
         public virtual ICollection<Pelicula> peliculas { get; set; }
     }

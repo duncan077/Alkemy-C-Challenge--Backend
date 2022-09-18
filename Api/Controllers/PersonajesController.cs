@@ -52,8 +52,8 @@ namespace DisneyApi.Controllers
             {
                 return NotFound();
             }
-            var response = _mapper.Map<Personaje, PersonajeFullDTO>(personaje);
-            return response;
+             
+            return _mapper.Map<Personaje, PersonajeFullDTO>(personaje);
         }
 
         // PUT: api/characters/5
@@ -100,7 +100,7 @@ namespace DisneyApi.Controllers
                             _context.personajes.Add(pj);
                             await _context.SaveChangesAsync();
 
-                            return CreatedAtAction("GetCharacter", new { id = pj.Id }, personaje);
+                            return CreatedAtAction("GetPersonaje", new { id = pj.Id }, personaje);
             }
             catch (Exception ex)
             {

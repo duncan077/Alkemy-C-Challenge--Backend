@@ -14,7 +14,7 @@ namespace DisneyApi.Model.Personaje
         [MaxLength(255)]
         public string? Historia { get; set; }
         [Required]
-        [DataType(DataType.ImageUrl)]
+        
         public string Imagen { get; set; }
         public List<int>? peliculas { get; set; }
     }

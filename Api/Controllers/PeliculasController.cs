@@ -29,21 +29,21 @@ namespace DisneyApi.Controllers
 
         // GET: api/movies
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Pelicula>>> Getpeliculas([FromQuery] PeliculasParameter peliculasParameter)
+        public async Task<ActionResult<IEnumerable<PeliculaSimpleDTO>>> Getpeliculas([FromQuery] PeliculasParameter peliculasParameter)
         {
-            var response= await _context.peliculas.Where(p=>p.Titulo.Equals(peliculasParameter.name)||p.generos.Any(g=>g.Id.Equals(peliculasParameter.genre))).ToListAsync();
+            var result= await _context.peliculas.Where(p=>p.Titulo.Equals(peliculasParameter.name)||p.generos.Any(g=>g.Id.Equals(peliculasParameter.genre))).ToListAsync();
             if (peliculasParameter.order == "ASC")
-                response.OrderBy(o => o.fechaCreacion);
+                result.OrderBy(o => o.fechaCreacion);
             else
-                response.OrderByDescending(o => o.fechaCreacion);
+                result.OrderByDescending(o => o.fechaCreacion);
+           
 
-
-            return response;
+            return  _mapper.Map<List<Pelicula>, List<PeliculaSimpleDTO>>(result);
         }
 
         // GET: api/movies/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Pelicula>> GetPelicula(int id)
+        public async Task<ActionResult<PeliculaFullDTO>> GetPelicula(int id)
         {
             var pelicula = await _context.peliculas.FindAsync(id);
 
@@ -52,7 +52,7 @@ namespace DisneyApi.Controllers
                 return NotFound();
             }
 
-            return pelicula;
+            return _mapper.Map<Pelicula,PeliculaFullDTO>(pelicula);
         }
 
         // PUT: api/movies/5
@@ -102,7 +102,7 @@ namespace DisneyApi.Controllers
                 _context.peliculas.Add(pelicula);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMovie", new { id = pelicula.Id }, pelicula);
+            return CreatedAtAction("GetPelicula", new { id = pelicula.Id }, pelicula);
             }
             catch (Exception ex)
             {

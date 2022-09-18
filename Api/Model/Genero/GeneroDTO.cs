@@ -9,7 +9,7 @@ namespace DisneyApi.Model.Genero
         [MaxLength(100)]
         public string Nombre { get; set; }
         [Required]
-        [DataType(DataType.ImageUrl)]
+        
         public string Imagen { get; set; }
     }
 }

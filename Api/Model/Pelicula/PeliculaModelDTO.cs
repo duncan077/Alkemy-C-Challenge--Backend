@@ -10,7 +10,7 @@ namespace DisneyApi.Model.Pelicula
         [MaxLength(100)]
         public string Titulo { get; set; }
         [Required]
-        [DataType(DataType.ImageUrl)]
+    
         public string Imagen { get; set; }
 
         [Required]
