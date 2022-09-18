@@ -35,7 +35,7 @@ namespace DisneyApi.Controllers
         public async Task<ActionResult<IEnumerable<PeliculaSimpleDTO>>> Getpeliculas([FromQuery] PeliculasParameter peliculasParameter)
         {
             var result =
-                await _context.peliculas.ToListAsync<Pelicula>();
+                await _context.peliculas.Include(p=>p.personajes).Include(p=>p.generos).ToListAsync<Pelicula>();
 
             if (!peliculasParameter.name.IsNullOrEmpty())
             {

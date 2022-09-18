@@ -1,9 +1,120 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.WebUtilities
 @inject NavigationManager NavManager
+@inject IGenerosService generosService
+@inject IPeliculasService peliculasService
+@inject IPersonajesService personajesService
 
 <PageTitle>DisneyFinder</PageTitle>
+<MudSelect T="int" @bind-Value="@select" Label="Selecciona Item a buscar" AnchorOrigin="Origin.BottomCenter">
+    <MudSelectItem Value="@(0)">Personaje</MudSelectItem>
+    <MudSelectItem Value="@(1)">Pelicula</MudSelectItem>
+</MudSelect>
+@if(select==0)
+{
+<MudSelect T="PeliculaSimpleDTO" MultiSelection="false" @bind-SelectedValues="@peliculasSelect" Label="Filtrar Pelicula">
+    @foreach (var pelis in peliculas)
+    {
+        <MudSelectItem T="PeliculaSimpleDTO" Value="@pelis">@pelis.Titulo</MudSelectItem>
+    }
+</MudSelect>
+<MudTextField @bind-Value="@name" Label="Ingrese Nombre"></MudTextField>
+<MudTextField @bind-Value="@age" Label="Ingrese Edad" T="int" ></MudTextField>
+<MudButton OnClick="@OnSearch">Buscar</MudButton>
+<MudSpacer></MudSpacer>
+@foreach (var item in personajes)
+{
+    <Frontend.Components.Personaje.PersonajeSimple personaje="item"></Frontend.Components.Personaje.PersonajeSimple>
+    <MudSpacer></MudSpacer>
+}
+}else
+{
+<MudSelect T="GeneroDTO" MultiSelection="false" @bind-SelectedValues="@generosSelect" Label="Filtrar Genero">
+    @foreach (var genro in generos)
+    {
+        <MudSelectItem T="GeneroDTO" Value="@genro">@genro.Nombre</MudSelectItem>
+            
+    }
+</MudSelect>
+<MudTextField @bind-Value="@name" Label="Ingrese Titulo"></MudTextField>
+<MudSelect T="string" @bind-Value="@order" Label="Selecciona Orden" AnchorOrigin="Origin.BottomCenter">
+    <MudSelectItem Value="@("ASC")">Ascendiente</MudSelectItem>
+    <MudSelectItem Value="@("DESC")">Descendiente</MudSelectItem>
+</MudSelect>
+<MudButton OnClick="@OnSearch" >Buscar</MudButton>
+<MudSpacer></MudSpacer>
+@foreach (var item in peliculas)
+{
+    <Frontend.Components.Pelicula.PeliculaSimple pelicula="item"></Frontend.Components.Pelicula.PeliculaSimple>
+        <MudSpacer></MudSpacer>
+    }
+}
 
 @code{
+    private int select = 0;
+    private int age = -1;
+    private string name = "";
+    private string order = "ASC";
 
+    //Retrive items
+    List<GeneroDTO> generos = new List<GeneroDTO>();
+    List<PeliculaSimpleDTO> peliculas = new List<PeliculaSimpleDTO>();
+    List<PersonajeSimpleDTO> personajes = new List<PersonajeSimpleDTO>();
+
+    //Selection items
+    private IEnumerable<GeneroDTO> generosSelect { get; set; } = new HashSet<GeneroDTO>();
+    private IEnumerable<PeliculaSimpleDTO> peliculasSelect { get; set; } = new HashSet<PeliculaSimpleDTO>();
+    string message = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await generosService.GetGeneros();
+        if (result.IsSuccess)
+            foreach (var item in result.Result)
+            {
+                generos.Add(item);
+            }
+
+        var peliculasGet = await peliculasService.GetPeliculas("", -1, "ASC");
+        if (peliculasGet.IsSuccess)
+            foreach (var item in peliculasGet.Result)
+            {
+                peliculas.Add(item);
+            }
+        var personajesGet = await personajesService.GetPersonajes("", -1, -1);
+        if (personajesGet.IsSuccess)
+            foreach (var item in personajesGet.Result)
+            {
+                personajes.Add(item);
+            }
+    }
+    private async Task OnSearch()
+    {
+        if(select==0)
+        {
+            int movie = -1;
+            if(peliculasSelect.Count()>0)
+                movie = peliculasSelect.First().Id;
+
+            personajes.Clear();
+            var personajesGet = await personajesService.GetPersonajes(name,age,movie);
+            if (personajesGet.IsSuccess)
+                foreach (var item in personajesGet.Result)
+                {
+                    personajes.Add(item);
+                }
+        }else
+        {
+            int genro = -1;
+            if (generosSelect.Count()>0)
+                genro = generosSelect.FirstOrDefault().Id.Value;
+            peliculas.Clear();
+            var peliculasGet = await peliculasService.GetPeliculas(name, genro, order);
+            if (peliculasGet.IsSuccess)
+                foreach (var item in peliculasGet.Result)
+                {
+                    peliculas.Add(item);
+                }
+
+        }
+    }
 }

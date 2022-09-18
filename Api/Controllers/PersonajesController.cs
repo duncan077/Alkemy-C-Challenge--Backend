@@ -34,7 +34,7 @@ namespace DisneyApi.Controllers
         public async Task<ActionResult<IEnumerable<PersonajeSimpleDTO>>> Getpersonajes([FromQuery] PjParameters pjParameters)
         {
             var result = 
-                await _context.personajes.ToListAsync<Personaje>();
+                await _context.personajes.Include(p=>p.peliculas).ToListAsync<Personaje>();
 
             if(!pjParameters.name.IsNullOrEmpty())
             {

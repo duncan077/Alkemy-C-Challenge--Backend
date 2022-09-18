@@ -17,7 +17,7 @@ namespace Frontend.Services
             try
             {
                 await GetBearerToken();
-                var data = await client.MoviesAllAsync(name, genre, order);
+                var data = await client.MoviesAllAsync(name, order,genre );
                 response = new Response<List<PeliculaSimpleDTO>>
                 {
                     Result = data.ToList(),

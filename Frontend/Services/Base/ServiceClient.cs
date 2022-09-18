@@ -1706,7 +1706,7 @@ namespace Frontend.Services.Base
 
         [Newtonsoft.Json.JsonProperty("fechaCreacion", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public System.DateTime FechaCreacion { get; set; }
+        public System.DateTime? FechaCreacion { get; set; }
 
         [Newtonsoft.Json.JsonProperty("personajes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<int> Personajes { get; set; }
@@ -1729,7 +1729,7 @@ namespace Frontend.Services.Base
         public string Imagen { get; set; }
 
         [Newtonsoft.Json.JsonProperty("fechaCreacion", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime FechaCreacion { get; set; }
+        public System.DateTime? FechaCreacion { get; set; }
 
     }
 
