@@ -34,23 +34,24 @@ namespace DisneyApi.Controllers
         public async Task<ActionResult<IEnumerable<PersonajeSimpleDTO>>> Getpersonajes([FromQuery] PjParameters pjParameters)
         {
             var result = 
-                await _context.personajes.ToListAsync<Personaje>();
+                await _context.personajes.Include(p=>p.peliculas).ToListAsync<Personaje>();
 
             if(!pjParameters.name.IsNullOrEmpty())
             {
                 result=result.Where(
                     p => p.Nombre.Equals(pjParameters.name)).ToList();
             }
+            if (pjParameters.movies != -1)
+            {
+                result = result.Where(
+                     p => p.peliculas.Any(pe => pe.Id == pjParameters.movies)).ToList();
+            }
             if (pjParameters.age!=-1)
             {
                  result=result.Where(
                      p => p.Edad==(pjParameters.age)).ToList();
             }
-            if (pjParameters.movies!=-1)
-            {
-                result= result.Where(
-                     p => p.peliculas.Any(pe=>pe.Id==pjParameters.movies)).ToList();
-            }
+           
             return _mapper.Map<List<Personaje>, List<PersonajeSimpleDTO>>(result);
 
         }
