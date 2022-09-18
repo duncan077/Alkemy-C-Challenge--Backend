@@ -1,0 +1,17 @@
+﻿@page "/peliculas/{id}"
+@inject IPeliculasService plService
+<Frontend.Components.Pelicula.PeliculaFull pelicula="@peliculaFullDTO"></Frontend.Components.Pelicula.PeliculaFull>
+@code {
+    [Parameter]
+    public string id { get; set; }
+    public PeliculaFullDTO peliculaFullDTO = new PeliculaFullDTO();
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await plService.GetPelicula(int.Parse(id));
+        if(result.IsSuccess)
+        {
+            peliculaFullDTO = result.Result;
+        }
+
+    }
+}

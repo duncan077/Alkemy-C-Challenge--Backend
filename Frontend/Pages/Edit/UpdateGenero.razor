@@ -1,0 +1,86 @@
+﻿@page "/generos/edit/{id}"
+@inject IGenerosService generosService
+
+<h3>Update Genero</h3>
+
+@if (!string.IsNullOrEmpty(message))
+{
+
+    <div class="alert-danger">@message</div>
+}
+@if(exist)
+{
+
+    <EditForm Model="@generoDTO" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+        <MudGrid>
+            <MudItem xs="12" sm="7">
+                <MudCard>
+                    <MudCardContent>
+                        <MudTextField Label="Nombre" HelperText="Max. 8 characters"
+                                  @bind-Value="generoDTO.Nombre" For="@(() => generoDTO.Nombre)" />
+                        <MudTextField Label="Imagen" Class="mt-3"
+                                  @bind-Value="generoDTO.Imagen" For="@(() => generoDTO.Imagen)" />
+                       
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Upload Genero</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudText Typo="Typo.body2" Align="Align.Center">
+                    Fill out the form correctly to see the success message.
+                </MudText>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+}
+
+@code {
+    private bool exist=false;
+    [Parameter]
+    public string id{ get; set; }
+    //For Upload
+    GeneroDTO generoDTO = new GeneroDTO();
+
+
+    //Selection items
+
+
+    string message = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await generosService.GetGenero(int.Parse(id));
+        if(result.IsSuccess)
+
+        {
+            exist = true;
+            generoDTO=result.Result;
+            }
+
+    }
+    private async Task OnValidSubmit()
+    {
+        try
+        {
+    
+                var result = await generosService.AddGenero(generoDTO);
+                if (result.IsSuccess)
+                {
+
+                    message = "Genero Upload Success";
+
+                }
+                message = "Error on genero upload. Please try again... " + result.Error;
+            
+           
+        }
+        catch (ApiException ex)
+        {
+            message = ex.Message;
+
+        }
+    }
+}

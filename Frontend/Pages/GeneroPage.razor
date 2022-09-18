@@ -1,0 +1,18 @@
+﻿@page "/generos/{id}"
+@inject IGenerosService gService
+<Frontend.Components.Genero.GeneroComponent genero="@generoDTO"></Frontend.Components.Genero.GeneroComponent>
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+    public GeneroDTO generoDTO = new GeneroDTO();
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await gService.GetGenero(int.Parse(id));
+        if(result.IsSuccess)
+        {
+            generoDTO = result.Result;
+        }
+
+    }
+}

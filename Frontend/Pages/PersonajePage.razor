@@ -1,0 +1,18 @@
+﻿@page "/personajes/{id}"
+@inject IPersonajesService pjService
+<Frontend.Components.Personaje.PersonajeFull personaje="@personajeFullDTO"></Frontend.Components.Personaje.PersonajeFull>
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+    public PersonajeFullDTO personajeFullDTO = new PersonajeFullDTO();
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await pjService.GetPersonaje(int.Parse(id));
+        if(result.IsSuccess)
+        {
+            personajeFullDTO = result.Result;
+        }
+
+    }
+}

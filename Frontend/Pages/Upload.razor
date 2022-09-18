@@ -68,7 +68,7 @@
                         </MudSelect>
                     </MudCardContent>
                     <MudCardActions>
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Upload Genero</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Upload Personaje</MudButton>
                     </MudCardActions>
                 </MudCard>
             </MudItem>
@@ -113,7 +113,7 @@
                         </MudSelect>
                     </MudCardContent>
                     <MudCardActions>
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Upload Genero</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Upload Pelicula</MudButton>
                     </MudCardActions>
                 </MudCard>
             </MudItem>
@@ -211,7 +211,7 @@
                     {
                         peliculaDTO.Generos.Add(item.Id.Value);
                     }
-                    var result = await personajesService.AddPersonaje(personajeDTO);
+                    var result = await peliculasService.AddPelicula(peliculaDTO);
                     if (result.IsSuccess)
                     {
 

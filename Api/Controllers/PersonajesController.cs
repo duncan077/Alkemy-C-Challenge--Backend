@@ -177,7 +177,7 @@ namespace DisneyApi.Controllers
                         _age = value;
             }
         }
-        public int? movie
+        public int? movies
         {
             get
             {

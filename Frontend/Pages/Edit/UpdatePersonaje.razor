@@ -1,0 +1,131 @@
+﻿@page "/personajes/edit/{id}"
+@inject IGenerosService generosService
+@inject IPeliculasService peliculasService
+@inject IPersonajesService personajesService
+<h3>Update Personaje</h3>
+
+@if (!string.IsNullOrEmpty(message))
+{
+
+    <div class="alert-danger">@message</div>
+}
+if(@exist)
+    <EditForm Model="@personajeDTO" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+        <MudGrid>
+            <MudItem xs="12" sm="7">
+                <MudCard>
+                    <MudCardContent>
+                        <MudTextField Label="Nombre" HelperText="Max. 8 characters"
+                                  @bind-Value="personajeDTO.Nombre" For="@(() => personajeDTO.Nombre)" />
+                        <MudTextField Label="Imagen" Class="mt-3"
+                                  @bind-Value="personajeDTO.Imagen" For="@(() => personajeDTO.Imagen)" />
+                        <MudTextField Label="Edad" Class="mt-3"
+                                  @bind-Value="personajeDTO.Edad" For="@(() => personajeDTO.Edad)" />
+                        <MudTextField Label="Peso" Class="mt-3"
+                                  @bind-Value="personajeDTO.Peso" For="@(() => personajeDTO.Peso)" />
+                        <MudTextField Label="Historia" Class="mt-3"
+                                  @bind-Value="personajeDTO.Historia" For="@(() => personajeDTO.Historia)" />
+                        <MudSelect T="PeliculaSimpleDTO" MultiSelection="true" @bind-SelectedValues="@peliculasSelect" Label="Peliculas">
+                            @foreach (var pelis in peliculas)
+                            {
+                                <MudSelectItem T="PeliculaSimpleDTO" Value="@pelis">@pelis.Titulo</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Upload Personaje</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudText Typo="Typo.body2" Align="Align.Center">
+                    Fill out the form correctly to see the success message.
+                </MudText>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+
+
+@code {
+    //For Upload
+    [Parameter]
+    public string id{ get; set; }
+    PersonajeModelDTO personajeDTO = new PersonajeModelDTO();
+    bool exist = false;
+
+    //Retrive items
+    List<GeneroDTO> generos = new List<GeneroDTO>();
+    List<PeliculaSimpleDTO> peliculas = new List<PeliculaSimpleDTO>();
+
+
+    //Selection items
+
+    private IEnumerable<PeliculaSimpleDTO> peliculasSelect { get; set; } = new HashSet<PeliculaSimpleDTO>();
+
+
+    string message = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await generosService.GetGeneros();
+        if(result.IsSuccess)
+            foreach (var item in result.Result)
+            {
+                generos.Add(item);
+            }
+
+        var peliculasGet = await peliculasService.GetPeliculas("",-1,"ASC");
+        if(peliculasGet.IsSuccess)
+            foreach (var item in peliculasGet.Result)
+            {
+                peliculas.Add(item);
+            }
+        var personajeGet = await personajesService.GetPersonaje(int.Parse(id));
+        if (personajeGet.IsSuccess)
+        {
+            personajeDTO.Imagen = personajeGet.Result.Imagen;
+            personajeDTO.Historia = personajeGet.Result.Historia;
+            personajeDTO.Edad = personajeGet.Result.Edad;
+            personajeDTO.Peso = personajeGet.Result.Peso;
+            foreach (var item in personajeGet.Result.Peliculas)
+            {
+                peliculasSelect.Append(item);
+            }
+
+            exist = true;
+        }
+    }
+    private async Task OnValidSubmit()
+    {
+        try
+        {
+
+
+            foreach (var item in peliculasSelect.ToList())
+            {
+                personajeDTO.Peliculas.Add(item.Id);
+            }
+            var result = await personajesService.AddPersonaje(personajeDTO);
+            if (result.IsSuccess)
+            {
+
+                message = "Personaje Upload Success";
+
+            }
+            message = "Error on personaje. Please try again...";
+
+        }catch (ApiException ex)
+        {
+            message = ex.Message;
+
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+
+        
+    }
+}

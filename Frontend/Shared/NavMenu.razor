@@ -1,6 +1,16 @@
 ﻿<MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    <MudNavLink Href="upload" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Upload</MudNavLink>
-    <MudNavLink Href="users/login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Login</MudNavLink>
-    <MudNavLink Href="users/register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Register</MudNavLink>
+    <AuthorizeView>
+        <Authorized>
+            <MudNavLink Href="upload" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Upload</MudNavLink>
+            <MudNavLink Href="users/logout" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Logout</MudNavLink>
+        </Authorized>
+        <NotAuthorized>
+            <MudNavLink Href="users/login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Login</MudNavLink>
+            <MudNavLink Href="users/register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Register</MudNavLink>
+        </NotAuthorized>
+    </AuthorizeView>
+    
+
+  
 </MudNavMenu>

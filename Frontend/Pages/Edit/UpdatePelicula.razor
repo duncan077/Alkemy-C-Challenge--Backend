@@ -1,0 +1,156 @@
+﻿@page "/peliculas/edit/{id}"
+@inject IGenerosService generosService
+@inject IPeliculasService peliculasService
+@inject IPersonajesService personajesService
+<h3>Update Pelicula</h3>
+
+@if (!string.IsNullOrEmpty(message))
+{
+
+    <div class="alert-danger">@message</div>
+}
+@if(exist)
+{
+    <EditForm Model="@peliculaDTO" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+        <MudGrid>
+            <MudItem xs="12" sm="7">
+                <MudCard>
+                    <MudCardContent>
+                        <MudTextField Label="Titulo" HelperText="Max. 8 characters"
+                                  @bind-Value="peliculaDTO.Titulo" For="@(() => peliculaDTO.Titulo)" />
+                        <MudTextField Label="Imagen" Class="mt-3"
+                                  @bind-Value="peliculaDTO.Imagen" For="@(() => peliculaDTO.Imagen)" />
+                        <MudDatePicker Label="Creado " @bind-Date="peliculaDTO.FechaCreacion" />
+                        <div class="d-flex flex-column align-center">
+                                <MudRating @bind-SelectedValue="peliculaDTO.Calificacion" />
+                               
+                        </div>
+                                 
+                        <MudSelect T="PersonajeSimpleDTO" MultiSelection="true" @bind-SelectedValues="@personajesSelect" Label="Personajes">
+                            @foreach (var pers in personajes)
+                                {
+                                    <MudSelectItem T="PersonajeSimpleDTO" Value="@pers">@pers.Nombre</MudSelectItem>
+                                }
+                        </MudSelect>
+                        <MudSelect T="GeneroDTO" MultiSelection="true" @bind-SelectedValues="@generosSelect" Label="Generos">
+                            @foreach (var genro in generos)
+                            {
+                                <MudSelectItem T="GeneroDTO" Value="@genro">@genro.Nombre</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Upload Pelicula</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudText Typo="Typo.body2" Align="Align.Center">
+                    Fill out the form correctly to see the success message.
+                </MudText>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+}
+
+@code {
+    private bool exist = false;
+    [Parameter]
+    public string id{ get; set; }
+    //For Upload
+
+    PeliculaModelDTO peliculaDTO = new PeliculaModelDTO();
+
+    //Retrive items
+    List<GeneroDTO> generos = new List<GeneroDTO>();
+    List<PeliculaSimpleDTO> peliculas = new List<PeliculaSimpleDTO>();
+    List<PersonajeSimpleDTO> personajes = new List<PersonajeSimpleDTO>();
+
+    //Selection items
+    private IEnumerable<GeneroDTO> generosSelect { get; set; } = new HashSet<GeneroDTO>();
+
+    private IEnumerable<PersonajeSimpleDTO> personajesSelect { get; set; } = new HashSet<PersonajeSimpleDTO>();
+
+    string message = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await generosService.GetGeneros();
+        if(result.IsSuccess)
+            foreach (var item in result.Result)
+            {
+                generos.Add(item);
+            }
+
+        var peliculasGet = await peliculasService.GetPelicula(int.Parse(id));
+        if(peliculasGet.IsSuccess)
+
+        {
+            exist = true;
+
+            peliculaDTO.Calificacion = peliculasGet.Result.Calificacion;
+            peliculaDTO.Titulo = peliculasGet.Result.Titulo;
+            peliculaDTO.FechaCreacion = peliculasGet.Result.FechaCreacion;
+            peliculaDTO.Imagen = peliculasGet.Result.Imagen;
+            foreach (var item in peliculasGet.Result.Generos)
+            {
+                generosSelect.Append(item);
+            }
+            foreach (var item in peliculasGet.Result.Personajes)
+            {
+                personajesSelect.Append(item);
+            }
+
+        }
+        var personajesGet = await personajesService.GetPersonajes("", -1, -1);
+        if(personajesGet.IsSuccess)
+            foreach (var item in personajesGet.Result)
+            {
+                personajes.Add(item);
+            }
+    }
+    private async Task OnValidSubmit()
+    {
+        
+          
+           
+                try
+                {
+                    var pjSelected = personajesSelect.ToList();
+                    var genroSelected = generosSelect.ToList();
+                    foreach (var item in pjSelected)
+                    {
+                        peliculaDTO.Personajes.Add(item.Id);
+                    }
+                    foreach (var item in genroSelected)
+                    {
+                        peliculaDTO.Generos.Add(item.Id.Value);
+                    }
+            var result = await peliculasService.AddPelicula(peliculaDTO);
+                    if (result.IsSuccess)
+                    {
+
+                        message = "Pelicula Upload Success";
+
+                    }
+                    message = "Error on pelicula. Please try again...";
+                } 
+                catch (ApiException ex)
+                {
+                    message = ex.Message;
+
+                }
+                catch (Exception)
+                {
+                    
+                    throw;
+                }
+               
+            
+            
+
+        
+       
+    }
+}

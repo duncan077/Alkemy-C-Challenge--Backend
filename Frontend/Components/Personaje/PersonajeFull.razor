@@ -1,4 +1,6 @@
 ﻿@using Frontend.Components.Pelicula
+@inject NavigationManager nav
+@inject IPersonajesService pjService;
 <MudCard>
     <MudCardContent>
         <MudText>@personaje.Nombre</MudText>
@@ -23,13 +25,14 @@
 @code {
     [Parameter]
     public PersonajeFullDTO personaje { get; set; }
-
+    [Parameter]
+    public string id{ get; set; }
     private async Task OnClickDelete()
     {
 
     }
     private async Task OnClickEdit()
     {
-
+        nav.NavigateTo($"/personajes/edit/{id}");
     }
 }
