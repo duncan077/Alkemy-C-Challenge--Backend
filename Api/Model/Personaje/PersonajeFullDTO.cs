@@ -15,6 +15,6 @@ namespace DisneyApi.Model.Personaje
         
     
         public string Imagen { get; set; }
-        public  List<PeliculaSimpleDTO> peliculas { get; set; }
+        public  List<PeliculaSimpleDTO> peliculas { get; set; } = new List<PeliculaSimpleDTO>();
     }
 }

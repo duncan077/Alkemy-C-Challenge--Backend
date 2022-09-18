@@ -13,13 +13,12 @@ namespace DisneyApi.Model.Pelicula
     
         public string Imagen { get; set; }
 
-        [Required]
-        [MinLength(1), MaxLength(5)]
+        
         public int Calificacion { get; set; }
         [Required]
-        public DateTime fechaCreacion { get; set; }
+        public DateTime? fechaCreacion { get; set; }
 
-        public  List<int>? personajes { get; set; }
-        public List<int>? generos { get; set; }
+        public  List<int>? personajes { get; set; } = new List<int>();
+        public List<int>? generos { get; set; } = new List<int>();
     }
 }

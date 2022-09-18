@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using DisneyApi.Model.Personaje;
 using DisneyApi.Model.Pelicula;
+using Microsoft.IdentityModel.Tokens;
 
 namespace DisneyApi.Controllers
 {
@@ -19,9 +20,9 @@ namespace DisneyApi.Controllers
     {
         private readonly DisneyContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+        private readonly ILogger<PersonajesController> _logger;
 
-        public PersonajesController(DisneyContext context, IMapper mapper, ILogger logger)
+        public PersonajesController(DisneyContext context, IMapper mapper, ILogger<PersonajesController> logger)
         {
             _context = context;
             _mapper = mapper;
@@ -32,13 +33,25 @@ namespace DisneyApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PersonajeSimpleDTO>>> Getpersonajes([FromQuery] PjParameters pjParameters)
         {
-            var response = _mapper.Map<List<Personaje>, List<PersonajeSimpleDTO>>(
-                await _context.personajes.Where(
-                    p=>p.Edad.Equals(pjParameters.age)
-                    ||p.Nombre.Equals(pjParameters.name)
-                    ||p.peliculas.Any(p=>p.Id.Equals(pjParameters.movies)))
-                .ToListAsync<Personaje>());
-            return  response;
+            var result = 
+                await _context.personajes.ToListAsync<Personaje>();
+
+            if(!pjParameters.name.IsNullOrEmpty())
+            {
+                result=result.Where(
+                    p => p.Nombre.Equals(pjParameters.name)).ToList();
+            }
+            if (pjParameters.age!=-1)
+            {
+                 result=result.Where(
+                     p => p.Edad==(pjParameters.age)).ToList();
+            }
+            if (pjParameters.movies!=-1)
+            {
+                result= result.Where(
+                     p => p.peliculas.Any(pe=>pe.Id==pjParameters.movies)).ToList();
+            }
+            return _mapper.Map<List<Personaje>, List<PersonajeSimpleDTO>>(result);
 
         }
 
@@ -46,7 +59,7 @@ namespace DisneyApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PersonajeFullDTO>> GetPersonaje(int id)
         {
-            var personaje = await _context.personajes.FindAsync(id);
+            var personaje = await _context.personajes.Include(p=>p.peliculas).FirstAsync(p=>p.Id==id);
 
             if (personaje == null)
             {
@@ -64,6 +77,7 @@ namespace DisneyApi.Controllers
         {
             var pj = _mapper.Map<PersonajeModelDTO, Personaje>(personaje);
             pj.Id = id;
+            pj.peliculas.Clear();
             AddPelicula(personaje,pj);
             _context.Entry(pj).State = EntityState.Modified;
 
@@ -91,11 +105,12 @@ namespace DisneyApi.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Personaje>> PostPersonaje(PersonajeModelDTO personaje)
+        public async Task<ActionResult<PersonajeModelDTO>> PostPersonaje(PersonajeModelDTO personaje)
         {
             try
             {
                 var pj = _mapper.Map<PersonajeModelDTO, Personaje>(personaje);
+                pj.peliculas.Clear();
                 AddPelicula(personaje, pj);
                             _context.personajes.Add(pj);
                             await _context.SaveChangesAsync();
@@ -133,6 +148,7 @@ namespace DisneyApi.Controllers
         }
         private void AddPelicula(PersonajeModelDTO personaje, Personaje result)
         {
+            if(!personaje.peliculas.IsNullOrEmpty())
             foreach (var item in personaje.peliculas)
             {
                 if (_context.peliculas.Any(g => g.Id == item))
@@ -145,7 +161,34 @@ namespace DisneyApi.Controllers
     public class PjParameters
     {
         public string? name { get; set; }
-        public int? age { get; set; }
-        public int? movies {get; set; }
+        private int? _age { get; set; } = -1;
+        private int? _movies { get; set; } = -1;
+
+        public int? age
+        {
+            get
+            {
+                return _age;
+            }
+            set
+            {
+                if (value.HasValue)
+                    if (value.Value >= -1)
+                        _age = value;
+            }
+        }
+        public int? movie
+        {
+            get
+            {
+                return _movies;
+            }
+            set
+            {
+                if (value.HasValue)
+                    if (value.Value >= -1)
+                        _movies = value;
+            }
+        }
     }
 }

@@ -9,6 +9,7 @@ namespace DisneyApi.Data
         public Pelicula()
         {
             personajes = new HashSet<Personaje>();
+            generos = new HashSet<Genero>();
         }
 
         [Required]
@@ -22,7 +23,7 @@ namespace DisneyApi.Data
         public string Imagen { get; set; }
 
         [Required]
-        [MinLength(1),MaxLength(5)]
+        
         public int Calificacion { get; set; }
         [Required]
         public DateTime fechaCreacion { get; set; }

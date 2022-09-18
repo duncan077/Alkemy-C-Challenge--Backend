@@ -16,6 +16,6 @@ namespace DisneyApi.Model.Personaje
         [Required]
         
         public string Imagen { get; set; }
-        public List<int>? peliculas { get; set; }
+        public List<int>? peliculas { get; set; } = new List<int>();
     }
 }

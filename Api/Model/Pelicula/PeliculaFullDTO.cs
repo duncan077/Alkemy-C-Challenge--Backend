@@ -19,7 +19,7 @@ namespace DisneyApi.Model.Pelicula
      
         public DateTime fechaCreacion { get; set; }
 
-        public  List<PersonajeSimpleDTO>? personajes { get; set; }
-        public List<GeneroDTO>? generos { get; set; }
+        public  List<PersonajeSimpleDTO>? personajes { get; set; } = new List<PersonajeSimpleDTO>();
+        public List<GeneroDTO>? generos { get; set; }=  new List<GeneroDTO>();
     }
 }

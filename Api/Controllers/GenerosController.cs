@@ -17,21 +17,21 @@ namespace DisneyApi.Controllers
     public class GenerosController : ControllerBase
     {
         private readonly DisneyContext _context;
-        private readonly IMapper mapper;
-        private readonly ILogger logger;
+        private readonly IMapper _mapper;
+        private readonly ILogger<GenerosController> _logger;
 
-        public GenerosController(DisneyContext context, IMapper mapper, ILogger logger)
+        public GenerosController(DisneyContext context, IMapper mapper, ILogger<GenerosController> logger)
         {
             _context = context;
-            this.mapper = mapper;
-            this.logger = logger;
+            _mapper = mapper;
+            _logger = logger;
         }
 
         // GET: api/Generos
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GeneroDTO>>> Getgeneros()
         {
-            return mapper.Map<List<Genero>,List<GeneroDTO>>(await _context.generos.ToListAsync());
+            return _mapper.Map<List<Genero>,List<GeneroDTO>>(await _context.generos.ToListAsync());
         }
 
         // GET: api/Generos/5
@@ -45,7 +45,7 @@ namespace DisneyApi.Controllers
                 return NotFound();
             }
 
-            return mapper.Map<Genero,GeneroDTO>(genero);
+            return _mapper.Map<Genero,GeneroDTO>(genero);
         }
 
         // PUT: api/Generos/5
@@ -88,7 +88,7 @@ namespace DisneyApi.Controllers
         [Authorize]
         public async Task<ActionResult<GeneroDTO>> PostGenero(GeneroDTO genero)
         {
-            _context.generos.Add(mapper.Map<GeneroDTO,Genero>(genero));
+            _context.generos.Add(_mapper.Map<GeneroDTO,Genero>(genero));
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetGenero", new { id = genero.Id }, genero);
