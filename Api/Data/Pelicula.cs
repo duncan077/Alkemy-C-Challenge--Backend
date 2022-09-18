@@ -23,8 +23,8 @@ namespace DisneyApi.Data
         public string Imagen { get; set; }
 
         [Required]
-        
-        public int Calificacion { get; set; }
+        [Range(1, 5, ErrorMessage = "Please enter valid integer Number")]
+        public int Calificacion { get; set; } = 1;
         [Required]
         public DateTime fechaCreacion { get; set; }
 
