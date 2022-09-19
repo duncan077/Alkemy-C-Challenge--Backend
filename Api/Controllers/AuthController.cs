@@ -10,11 +10,13 @@ using SendGrid;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Cors;
 
 namespace DisneyApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [DisableCors]
     public class AuthController : ControllerBase
     {
         private readonly ILogger<AuthController> _logger;

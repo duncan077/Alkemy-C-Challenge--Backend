@@ -11,11 +11,13 @@ using AutoMapper;
 using DisneyApi.Model.Personaje;
 using DisneyApi.Model.Pelicula;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Cors;
 
 namespace DisneyApi.Controllers
 {
     [Route("api/characters")]
     [ApiController]
+    [DisableCors]
     public class PersonajesController : ControllerBase
     {
         private readonly DisneyContext _context;

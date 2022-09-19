@@ -12,11 +12,13 @@ using DisneyApi.Model.Pelicula;
 using Microsoft.IdentityModel.Tokens;
 using DisneyApi.Model.Genero;
 using DisneyApi.Model.Personaje;
+using Microsoft.AspNetCore.Cors;
 
 namespace DisneyApi.Controllers
 {
     [Route("api/movies")]
     [ApiController]
+    [DisableCors]
     public class PeliculasController : ControllerBase
     {
         private readonly DisneyContext _context;

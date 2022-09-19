@@ -9,11 +9,13 @@ using DisneyApi.Data;
 using Microsoft.AspNetCore.Authorization;
 using DisneyApi.Model.Genero;
 using AutoMapper;
+using Microsoft.AspNetCore.Cors;
 
 namespace DisneyApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [DisableCors]
     public class GenerosController : ControllerBase
     {
         private readonly DisneyContext _context;
