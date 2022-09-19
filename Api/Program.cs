@@ -23,10 +23,10 @@ try
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
     // Add services to the container.
-    var serverVersion = ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("ConnectionString"));
+    var serverVersion = ServerVersion.AutoDetect(builder.Configuration.GetValue<string>("ConnectionString"));
     // Add services to the container.
     builder.Services.AddDbContext<DisneyContext>(options => options
-                    .UseMySql(builder.Configuration.GetConnectionString("ConnectionString"), serverVersion)
+                    .UseMySql(builder.Configuration.GetValue<string>("ConnectionString"), serverVersion)
                     // The following three options help with debugging, but should
                     // be changed or removed for production.
                     .LogTo(Console.WriteLine,Microsoft.Extensions.Logging.LogLevel.Information)
