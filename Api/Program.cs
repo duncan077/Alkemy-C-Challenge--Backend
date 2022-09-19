@@ -23,7 +23,7 @@ try
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
     // Add services to the container.
-    var connectionString = "server=localhost;user=disney;password=1234;database=disneyapi";
+    var connectionString = "server=b5uv5z8kh3moczmtwqhs-mysql.services.clever-cloud.com;user=uewcdhgwdb2dlveq;password=seiP1L2fyFKzVG0zKAFn;database=b5uv5z8kh3moczmtwqhs";
     var serverVersion = ServerVersion.AutoDetect(connectionString);
     // Add services to the container.
     builder.Services.AddDbContext<DisneyContext>(options => options
