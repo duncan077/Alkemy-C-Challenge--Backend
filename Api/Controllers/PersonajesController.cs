@@ -39,7 +39,7 @@ namespace DisneyApi.Controllers
             if(!pjParameters.name.IsNullOrEmpty())
             {
                 result=result.Where(
-                    p => p.Nombre.Equals(pjParameters.name)).ToList();
+                    p => p.Nombre.Contains(pjParameters.name)).ToList();
             }
             if (pjParameters.movies != -1)
             {
@@ -161,7 +161,7 @@ namespace DisneyApi.Controllers
     }
     public class PjParameters
     {
-        public string? name { get; set; }
+        public string? name { get; set; } = "";
         private int? _age { get; set; } = -1;
         private int? _movies { get; set; } = -1;
 

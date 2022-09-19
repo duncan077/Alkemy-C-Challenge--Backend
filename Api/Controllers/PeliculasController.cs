@@ -40,7 +40,7 @@ namespace DisneyApi.Controllers
             if (!peliculasParameter.name.IsNullOrEmpty())
             {
                 result = result.Where(
-                    p => p.Titulo.Equals(peliculasParameter.name)).ToList();
+                    p => p.Titulo.Contains(peliculasParameter.name)).ToList();
             }
             if (peliculasParameter.genre >0)
             {
@@ -48,15 +48,15 @@ namespace DisneyApi.Controllers
                     p => p.generos.Any(g=>g.Id== peliculasParameter.genre)).ToList();
             }
            
-            
-            
-            if (peliculasParameter.order == "ASC")
-                result.OrderBy(o => o.fechaCreacion);
-            else
-                result.OrderByDescending(o => o.fechaCreacion);
-           
+            var response = _mapper.Map<List<Pelicula>, List<PeliculaSimpleDTO>>(result);
 
-            return  _mapper.Map<List<Pelicula>, List<PeliculaSimpleDTO>>(result);
+            if (peliculasParameter.order == "ASC")
+                response.OrderBy(o => o.fechaCreacion);
+            else
+                response.OrderByDescending(o => o.fechaCreacion);
+
+
+            return response;
         }
 
         // GET: api/movies/5
@@ -183,9 +183,9 @@ namespace DisneyApi.Controllers
 
     public class PeliculasParameter
         {
-       
 
-        public string? name { get; set; }
+
+        public string? name { get; set; } = "";
         private int? _genre { get; set; } = -1;
 
         private string? _order ="ASC";
